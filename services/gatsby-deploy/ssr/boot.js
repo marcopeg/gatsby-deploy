@@ -46,6 +46,15 @@ registerAction({
     name: '♦ boot',
     handler: async ({ settings }) => {
 
+        settings.deploy = {
+            cleanOrigin: config.get('KEEP_ORIGIN', '---') === '---'
+                ? true
+                : config.get('KEEP_ORIGIN') !== 'true',
+            cleanTarget: config.get('KEEP_TARGET', '---') === '---'
+            ? true
+            : config.get('KEEP_TARGET') !== 'true',
+        }
+
         settings.crypto = {
             algorithm: config.get('CRYPTO_ALGORITHM', 'aes-256-ctr'),
         }

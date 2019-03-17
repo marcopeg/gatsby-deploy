@@ -5,6 +5,7 @@ import fs from 'fs-extra'
 import { gitClone } from './git-clone'
 import { gitCommit } from './git-commit'
 import { gitPush } from './git-push'
+import { gitPull } from './git-pull'
 import { gitIdentity } from './git-identity'
 import { yarnInstall } from './yarn-install'
 import { yarnBuild } from './yarn-build'
@@ -15,30 +16,44 @@ export const build = async (config, log = () => {}) => {
     const start = new Date()
     log('build start')
 
-    const originPath = '/tmp/gatsby-deploy/origin'
-    const targetPath = '/tmp/gatsby-deploy/target'
+    const originPath = `/tmp/gatsby-deploy/origin/${config.origin.repository}/${config.origin.branch}`
+    const targetPath = `/tmp/gatsby-deploy/target/${config.target.repository}/${config.target.branch}`
 
     log('=======================\n\n')
     log('Cleaning up temp folders...\n')
-    await fs.remove(originPath)
-    await fs.remove(targetPath)
-    await fs.ensureDir(originPath)
 
-    log('=======================\n\n')
-    log('## Cloning origin repo...\n')
-    await gitClone({
-        ...config.auth,
-        ...config.origin,
-        target: originPath,
-    }, { log })
+    if (config.cleanOrigin) await fs.remove(originPath)
+    if (config.cleanTarget) await fs.remove(targetPath)
+
+    const originExists = await fs.exists(originPath)
+    if (!originExists) {
+        log('=======================\n\n')
+        log('## Cloning origin repo...\n')
+        await fs.ensureDir(originPath)
+        await gitClone({
+            ...config.auth,
+            ...config.origin,
+            target: originPath,
+        }, { log })
+    } else {
+        log('=======================\n\n')
+        log('## Pulling origin repo...\n')
+        await gitPull({
+            ...config.origin,
+            target: originPath,
+        }, { log })
+    }
     
-    log('=======================\n\n')
-    log('## Cloning target repo...\n')
-    await gitClone({
-        ...config.auth,
-        ...config.target,
-        target: targetPath,
-    }, { log })
+    const targetExists = await fs.exists(targetPath)
+    if (!targetExists) {
+        log('=======================\n\n')
+        log('## Cloning target repo...\n')
+        await gitClone({
+            ...config.auth,
+            ...config.target,
+            target: targetPath,
+        }, { log })
+    }
 
     log('=======================\n\n')
     log('## Installing dependencies...\n')
@@ -69,8 +84,8 @@ export const build = async (config, log = () => {}) => {
 
     log('=======================\n\n')
     log('## Cleaning up temp folders...\n')
-    await fs.remove(originPath)
-    await fs.remove(targetPath)
+    if (config.cleanOrigin) await fs.remove(originPath)
+    if (config.cleanTarget) await fs.remove(targetPath)
 
     const elapsed = new Date() - start
     const elapsedStr = ms(elapsed)

@@ -6,7 +6,10 @@ import { logVerbose } from 'services/logger'
 export const makeWebhookRoute = (config) => {
     return async (req, res) => {
         try {
-            await build(req.data.token, (line) => {
+            await build({
+                ...req.data.token,
+                ...config.deploy,
+            }, (line) => {
                 res.write(`${line}\n`)
                 logVerbose(line)
             })
