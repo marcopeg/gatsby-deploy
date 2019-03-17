@@ -1,6 +1,7 @@
 import bodyParser from 'body-parser'
 import { EXPRESS_MIDDLEWARE, EXPRESS_ROUTE } from 'services/express/hooks'
 import { FEATURE_NAME } from './hooks'
+import { makeDetectGithubPing } from './detect-github-ping'
 import { makeValidateJwt } from './validate-jwt'
 import { makeDecryptJwt } from './decrypt-jwt'
 import { makeWebhookRoute } from './webhook-route'
@@ -19,17 +20,18 @@ export const register = ({ registerAction, settings }) => {
         name: FEATURE_NAME,
         trace: __filename,
         handler: ({ app }) => {
-            app.post('/build', [
+            app.post('/hook/:token', [
+                makeDetectGithubPing(settings),
                 makeValidateJwt(settings),
                 makeDecryptJwt(settings),
                 makeWebhookRoute(settings),
             ])
-            app.get('/build', [
+            app.get('/hook/:token', [
                 makeValidateJwt(settings),
                 makeDecryptJwt(settings),
                 makeWebhookRoute(settings),
             ])
-            app.get('/encrypt', [
+            app.get('/encrypt/:token', [
                 makeValidateJwt(settings),
                 makeEncryptRoute(settings),
             ])
