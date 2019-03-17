@@ -1,0 +1,18 @@
+version: '2.1'
+services:
+
+    gatsby-deploy:
+        build:
+            context: ./services/gatsby-deploy
+            dockerfile: Dockerfile
+        networks:
+            - production
+        ports:
+            - ${HUMBLE_PORT}:8080
+        environment:
+            NODE_ENV: development
+            LOG_LEVEL: ${LOG_LEVEL}
+            JWT_SECRET: ${JWT_SECRET}
+
+networks:
+    production:

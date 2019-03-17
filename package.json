@@ -1,0 +1,32 @@
+{
+    "name": "gatsby-deploy",
+    "version": "0.0.2",
+    "description": "Docker deploy automation for Gatsby",
+    "scripts": {
+      "book:serve": "node_modules/.bin/gitbook serve",
+      "book:build": "node_modules/.bin/gitbook build . docs",
+      "book:install": "node_modules/.bin/gitbook install"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/marcopeg/gatsby-deploy.git"
+    },
+    "author": "Marco Pegoraro",
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/marcopeg/gatsby-deploy/issues"
+    },
+    "homepage": "https://marcopeg.github.io/gatsby-deploy/",
+    "keywords": [
+      "gatsby",
+      "docker",
+      "deployment",
+      "automation",
+      "pipeline",
+      "triggers"
+    ],
+    "devDependencies": {
+      "gitbook-cli": "^2.3.2"
+    }
+  }
+  

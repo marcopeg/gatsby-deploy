@@ -1,0 +1,1 @@
+FROM marcopeg/gatsby-deploy
