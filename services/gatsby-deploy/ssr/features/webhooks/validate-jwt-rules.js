@@ -9,12 +9,14 @@ export const makeValidateJwtRules = (settings) => {
             && token.origin.event !== github.event
         ) {
             logVerbose(`expected event "${token.origin.event}" but got "${github.event}"`)
+            res.status(412)
             res.send('wrong github event')
             return
         }
 
         if (github.branch !== token.origin.branch) {
             logVerbose(`expected branch "${token.origin.branch}" but got "${github.branch}"`)
+            res.status(412)
             res.send('wrong branch')
             return
         }

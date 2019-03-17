@@ -13,6 +13,10 @@ services:
             NODE_ENV: development
             LOG_LEVEL: ${LOG_LEVEL}
             JWT_SECRET: ${JWT_SECRET}
+            KEEP_ORIGIN: ${KEEP_ORIGIN}
+            KEEP_TARGET: ${KEEP_TARGET}
+        volumes:
+            - ${HUMBLE_DATA}:/tmp/gatsby-deploy
 
 networks:
     production:
