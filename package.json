@@ -1,6 +1,6 @@
 {
     "name": "gatsby-deploy",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "Docker deploy automation for Gatsby",
     "scripts": {
       "book:serve": "node_modules/.bin/gitbook serve",

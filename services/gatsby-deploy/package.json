@@ -1,6 +1,6 @@
 {
   "name": "gatsby-deploy",
-  "version": "0.0.0",
+  "version": "0.0.3",
   "description": "Docker based deployment automation for Gatsby",
   "private": true,
   "scripts": {
