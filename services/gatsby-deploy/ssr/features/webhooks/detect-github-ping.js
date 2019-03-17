@@ -5,7 +5,6 @@ export const makeDetectGithubPing = (settings) => {
         try {
             if (req.headers['x-github-event'] === 'ping') {
                 res.send('pong')
-                next()
                 return
             }
         } catch (err) {

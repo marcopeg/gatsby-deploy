@@ -4,7 +4,7 @@ import { logError, logDebug } from 'services/logger'
 export const makeValidateJwt = (settings) => {
     return async (req, res, next) => {
         try {
-            req.data.github = await jwt.verify(req.params.token)
+            req.data.token = await jwt.verify(req.params.token)
             next()
         } catch (err) {
             logError(err.message)

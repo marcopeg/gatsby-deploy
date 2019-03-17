@@ -85,6 +85,7 @@ export const makeDetectGithubInfo = (settings) => {
             logDebug(err)
         }
 
-        res.send(req.data)
+        // res.send(req.data)
+        next()
     }
 }

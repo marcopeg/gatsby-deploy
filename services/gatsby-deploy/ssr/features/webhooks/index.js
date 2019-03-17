@@ -4,6 +4,7 @@ import { FEATURE_NAME } from './hooks'
 import { makeDetectGithubPing } from './detect-github-ping'
 import { makeDetectGithubInfo } from './detect-github-info'
 import { makeValidateJwt } from './validate-jwt'
+import { makeValidateJwtRules } from './validate-jwt-rules'
 import { makeDecryptJwt } from './decrypt-jwt'
 import { makeWebhookRoute } from './webhook-route'
 import { makeEncryptRoute } from './encrypt-route'
@@ -25,6 +26,7 @@ export const register = ({ registerAction, settings }) => {
                 makeDetectGithubPing(settings),
                 makeDetectGithubInfo(settings),
                 makeValidateJwt(settings),
+                makeValidateJwtRules(settings),
                 makeDecryptJwt(settings),
                 makeWebhookRoute(settings),
             ])

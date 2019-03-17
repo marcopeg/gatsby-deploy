@@ -5,8 +5,8 @@ export const makeDecryptJwt = (settings) => {
         try {
             // decrypt user's password from jwt
             const decipher = crypto.createDecipher(settings.crypto.algorithm, settings.jwt.secret)        
-            req.data.github.auth.password = decipher.update(req.data.github.auth.password, 'hex')
-            req.data.github.auth.password += decipher.final();
+            req.data.token.auth.password = decipher.update(req.data.token.auth.password, 'hex')
+            req.data.token.auth.password += decipher.final();
 
             next()
         } catch (err) {
