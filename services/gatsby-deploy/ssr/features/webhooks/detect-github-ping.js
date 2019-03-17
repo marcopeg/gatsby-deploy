@@ -3,7 +3,7 @@ import { logError, logDebug } from 'services/logger'
 export const makeDetectGithubPing = (settings) => {
     return (req, res, next) => {
         try {
-            if (req.body.headers['x-github-event'] === 'ping') {
+            if (req.headers['x-github-event'] === 'ping') {
                 res.send('pong')
                 next()
                 return
