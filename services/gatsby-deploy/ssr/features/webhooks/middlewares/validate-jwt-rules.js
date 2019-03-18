@@ -1,4 +1,3 @@
-import * as jwt from 'services/jwt'
 import { logVerbose } from 'services/logger'
 
 export const makeValidateJwtRules = (settings) => {

@@ -1,13 +1,13 @@
 import bodyParser from 'body-parser'
 import { EXPRESS_MIDDLEWARE, EXPRESS_ROUTE } from 'services/express/hooks'
 import { FEATURE_NAME } from './hooks'
-import { makeDetectGithubPing } from './detect-github-ping'
-import { makeDetectGithubInfo } from './detect-github-info'
-import { makeValidateJwt } from './validate-jwt'
-import { makeValidateJwtRules } from './validate-jwt-rules'
-import { makeDecryptJwt } from './decrypt-jwt'
-import { makeWebhookRoute } from './webhook-route'
-import { makeEncryptRoute } from './encrypt-route'
+import { makeDetectGithubPing } from './middlewares/detect-github-ping'
+import { makeDetectGithubInfo } from './middlewares/detect-github-info'
+import { makeValidateJwt } from './middlewares/validate-jwt'
+import { makeValidateJwtRules } from './middlewares/validate-jwt-rules'
+import { makeDecryptJwt } from './middlewares/decrypt-jwt'
+import { makeWebhookRoute } from './routes/webhook-route'
+import { makeEncryptRoute } from './routes/encrypt-route'
 
 export const register = ({ registerAction, settings }) => {
     registerAction({

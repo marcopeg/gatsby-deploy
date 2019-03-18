@@ -20,6 +20,7 @@ export const build = async (config, log = () => {}) => {
     // await new Promise(resolve => setTimeout(resolve, 5000))
     // log('build finish')
     // return { elapsed: 5000, elapsedStr: '5s' }
+    // throw new Error('nooo')
 
     const originPath = `/tmp/gatsby-deploy/origin/${config.origin.repository}/${config.origin.branch}`
     const targetPath = `/tmp/gatsby-deploy/target/${config.target.repository}/${config.target.branch}`
