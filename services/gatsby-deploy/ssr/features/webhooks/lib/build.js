@@ -44,10 +44,19 @@ export const build = async (config, log = () => {}) => {
     } else {
         log('=======================\n\n')
         log('## Pulling origin repo...\n')
-        await gitPull({
-            ...config.origin,
-            target: originPath,
-        }, { log })
+        try {
+            await gitPull({
+                ...config.origin,
+                target: originPath,
+            }, { log })
+        } catch (err) {
+            await fs.remove(originPath)
+            await gitClone({
+                ...config.auth,
+                ...config.origin,
+                target: originPath,
+            }, { log })
+        }
     }
     
     const targetExists = await fs.exists(targetPath)
@@ -62,10 +71,19 @@ export const build = async (config, log = () => {}) => {
     } else {
         log('=======================\n\n')
         log('## Pulling target repo...\n')
-        await gitPull({
-            ...config.target,
-            target: targetPath,
-        }, { log })
+        try {
+            await gitPull({
+                ...config.target,
+                target: targetPath,
+            }, { log })
+        } catch (err) {
+            await fs.remove(targetPath)
+            await gitClone({
+                ...config.auth,
+                ...config.target,
+                target: targetPath,
+            }, { log })
+        }
     }
 
     log('=======================\n\n')
