@@ -1,5 +1,5 @@
 import md5 from 'md5'
-import { logInfo, logError } from 'services/logger'
+import { logInfo, logError, logVerbose, logDebug } from 'services/logger'
 import { build } from './lib/build'
 
 const queueList = []
@@ -35,27 +35,69 @@ const runBuild = (buildId, log, end) =>
             const report = await build(buildConfig, log)
             log('Have a nice day ;-)')
             logInfo(`Build ${buildId} succeded in ${report.elapsedStr}`)
-            end()
-            resolve({
+            const result = {
                 success: true,
+                build: {
+                    id: buildId,
+                    data: buildData,
+                    config: buildConfig,
+                },
                 report,
-            })
+            }
+            end(result)
+            resolve(result)
         } catch (error) {
             log(`Build failed: ${error.message}`)
             logError(`Build failed: ${buildId} failed - ${error.message}`)
-            logError(anonymizeBuildData(buildData))
-            end()
-            resolve({
+            logDebug(anonymizeBuildData(buildData))
+            const result = {
                 success: false,
+                build: {
+                    id: buildId,
+                    data: buildData,
+                    config: buildConfig,
+                },
                 error,
-            })
+            }
+            end(result)
+            resolve(result)
         } finally {
             removeBuild(buildId)
         }
     })
 
-export const start = () => {
+const loop = () => {
+    const next = () => setTimeout(loop, 1000)
 
+    const onData = line => logInfo(line)
+
+    const onBuildEnd = (res) => {
+        logInfo(`[build-daemon] loop - ${res.build.id} ${res.success ? 'completed' : `failed - ${res.error.message}` }`)
+        next()
+    }
+
+    // skip if building
+    const runningBuild = queueList.find(buildId => queueMap[buildId].isRunning)
+    if (runningBuild) {
+        logVerbose(`[build-daemon] loop - skip due to ${runningBuild}`)
+        next()
+        return
+    }
+
+    // try to run a build
+    const buildId = queueList.find(buildId => !queueMap[buildId].isRunning)
+    if (buildId) {
+        logInfo(`[build-daemon] loop - trigger build ${runningBuild}`)
+        runBuild(buildId, onData, onBuildEnd)
+        return
+    }
+
+    logDebug('[build-daemon] loop - free as a bird')
+    next()
+}
+
+export const start = () => {
+    loop()
 }
 
 export const addBuild = (settings, log, end) => {

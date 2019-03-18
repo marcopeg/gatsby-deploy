@@ -1,5 +1,5 @@
 
-import { logVerbose } from 'services/logger'
+import { logInfo } from 'services/logger'
 import { addBuild } from '../build-daemon'
 
 export const makeWebhookRoute = (config) => {
@@ -12,7 +12,7 @@ export const makeWebhookRoute = (config) => {
 
         const onData = (line) => {
             res.write(`${line}\n`)
-            logVerbose(line)
+            logInfo(line)
         }
 
         const onEnd = () => {
