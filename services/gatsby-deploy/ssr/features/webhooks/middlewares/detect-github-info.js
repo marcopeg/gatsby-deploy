@@ -21,6 +21,14 @@ const getPrEventName = (body) => {
     return 'pull_request'
 }
 
+const getCreateEventName = (body) => {
+    if (body.ref_type === 'tag') {
+        return 'create_tag'
+    }
+
+    return 'create'
+}
+
 const getPushBranch = (body) => {
     if (body.ref.indexOf('refs/heads/') !== -1) {
         return body.ref.substr(11)
@@ -39,6 +47,7 @@ const getReleaseBranch = (body) => {
 
 const resolveEvent = {
     pull_request: getPrEventName,
+    create: getCreateEventName,
 }
 
 const resolveBranch = {
@@ -77,9 +86,11 @@ export const makeDetectGithubInfo = (settings) => {
             event: null,
             branch: null,
         }
+
         try {
             req.data.github.event = getEventName(req.headers['x-github-event'], req.body)
             req.data.github.branch = getBranchName(req.headers['x-github-event'], req.body)
+            // console.log(req.data.github)
         } catch (err) {
             logError(err.message)
             logDebug(err)

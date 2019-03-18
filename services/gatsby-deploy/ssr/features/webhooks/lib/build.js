@@ -59,6 +59,13 @@ export const build = async (config, log = () => {}) => {
             ...config.target,
             target: targetPath,
         }, { log })
+    } else {
+        log('=======================\n\n')
+        log('## Pulling target repo...\n')
+        await gitPull({
+            ...config.target,
+            target: targetPath,
+        }, { log })
     }
 
     log('=======================\n\n')

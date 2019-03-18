@@ -4,6 +4,7 @@ export const spawn = (cmd, options = {}) =>
     new Promise((resolve, reject) => {
         const tokens = cmd.split(' ')
         const { log, ...otherOptions } = options
+        let lastErrorMsg = ''
         
         const process = spawnCmd(tokens.shift(), tokens, otherOptions)
 
@@ -12,13 +13,17 @@ export const spawn = (cmd, options = {}) =>
         })
         
         process.stderr.on('data', data => {
-            log(data.toString().trim())
+            lastErrorMsg = data.toString().trim()
         })
 
         process.on('close', code => {
             log('done', code)
             if (code === 0) {
                 resolve()
+            } else {
+                const error = new Error(lastErrorMsg)
+                error.spawnCode = code
+                reject(error)
             }
         })
 

@@ -33,7 +33,6 @@ const runBuild = (buildId, log, end) =>
 
         try {
             const report = await build(buildConfig, log)
-            log('Have a nice day ;-)')
             logInfo(`Build ${buildId} succeded in ${report.elapsedStr}`)
             const result = {
                 success: true,
@@ -47,8 +46,7 @@ const runBuild = (buildId, log, end) =>
             end(result)
             resolve(result)
         } catch (error) {
-            log(`Build failed: ${error.message}`)
-            logError(`Build failed: ${buildId} failed - ${error.message}`)
+            logError(`[build-daemon] Build failed: ${buildId} failed - ${error.message}`)
             logDebug(anonymizeBuildData(buildData))
             const result = {
                 success: false,
@@ -69,10 +67,10 @@ const runBuild = (buildId, log, end) =>
 const loop = () => {
     const next = () => setTimeout(loop, 1000)
 
-    const onData = line => logInfo(line)
+    const onData = line => logVerbose(`[build-daemon] ${line}`)
 
     const onBuildEnd = (res) => {
-        logInfo(`[build-daemon] loop - ${res.build.id} ${res.success ? 'completed' : `failed - ${res.error.message}` }`)
+        logVerbose(`[build-daemon] loop - ${res.build.id} ${res.success ? 'completed' : `failed - ${res.error.message}` }`)
         next()
     }
 
@@ -85,10 +83,10 @@ const loop = () => {
     }
 
     // try to run a build
-    const buildId = queueList.find(buildId => !queueMap[buildId].isRunning)
-    if (buildId) {
-        logInfo(`[build-daemon] loop - trigger build ${runningBuild}`)
-        runBuild(buildId, onData, onBuildEnd)
+    const candidateBuild = queueList.find(buildId => !queueMap[buildId].isRunning)
+    if (candidateBuild) {
+        logVerbose(`[build-daemon] loop - trigger build ${candidateBuild}`)
+        runBuild(candidateBuild, onData, onBuildEnd)
         return
     }
 
@@ -96,9 +94,9 @@ const loop = () => {
     next()
 }
 
-export const start = () => {
-    loop()
-}
+// Maybe in the future we offer start/stop functionality
+// anyway it is a good interface
+export const start = loop
 
 export const addBuild = (settings, log, end) => {
     const buildId = `build-${md5(JSON.stringify(settings.token))}`
@@ -125,4 +123,5 @@ export const addBuild = (settings, log, end) => {
 
     // Run the build right away and attach the logs to the output stream
     runBuild(buildId, log, end)
+    // end()
 }
