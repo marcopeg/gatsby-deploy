@@ -122,6 +122,7 @@ export const addBuild = (settings, log, end) => {
     }
 
     // Run the build right away and attach the logs to the output stream
-    runBuild(buildId, log, end)
-    // end()
+    // runBuild(buildId, log, end)
+    // console.log(settings)
+    end()
 }
