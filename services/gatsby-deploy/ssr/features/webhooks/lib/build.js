@@ -7,8 +7,7 @@ import { gitCommit } from './git-commit'
 import { gitPush } from './git-push'
 import { gitPull } from './git-pull'
 import { gitIdentity } from './git-identity'
-import { yarnInstall } from './yarn-install'
-import { yarnBuild } from './yarn-build'
+import { yarn } from './yarn'
 import { fsEmptyDir } from './fs-empty-dir'
 import { fsMoveFiles } from './fs-move-files'
 
@@ -25,13 +24,18 @@ export const build = async (config, log = () => {}) => {
 
     const originPath = `${config.config.data}/origin/${config.origin.repository}/${config.origin.branch}`
     const targetPath = `${config.config.data}/target/${config.target.repository}/${config.target.branch}`
+
     
 
-    log('=======================\n\n')
-    log('Cleaning up temp folders...\n')
+    /**
+     * CLONE ORIGIN
+     */
 
-    if (config.config.cleanOrigin) await fs.remove(originPath)
-    if (config.config.cleanTarget) await fs.remove(targetPath)
+    if (config.config.cleanOrigin) {
+        log('=======================\n\n')
+        log('## Cleaning origin repo...\n')
+        await fs.remove(originPath)
+    }
 
     const originExists = await fs.exists(originPath)
     if (!originExists) {
@@ -60,7 +64,33 @@ export const build = async (config, log = () => {}) => {
             }, { log })
         }
     }
+
+
+
+    /**
+     * BUILD
+     */
+
+    log('=======================\n\n')
+    log('## Installing dependencies...\n')
+    await yarn('install', originPath, { log })
     
+    log('=======================\n\n')
+    log('## Building the project...\n')
+    await yarn(config.build.script, originPath, { log })
+
+
+
+    /**
+     * CLONE TARGET
+     */
+
+    if (config.config.cleanTarget) {
+        log('=======================\n\n')
+        log('## Cleaning target repo...\n')
+        await fs.remove(targetPath)
+    }
+
     const targetExists = await fs.exists(targetPath)
     if (!targetExists) {
         log('=======================\n\n')
@@ -88,18 +118,22 @@ export const build = async (config, log = () => {}) => {
         }
     }
 
-    log('=======================\n\n')
-    log('## Installing dependencies...\n')
-    await yarnInstall(originPath, { log })
-    
-    log('=======================\n\n')
-    log('## Building the project...\n')
-    await yarnBuild(originPath, { log })
-    
+
+
+    /**
+     * MOVE BUILD FILES
+     */
+
     log('=======================\n\n')
     log('## Moving artifacts...\n')
     await fsEmptyDir(targetPath, [ '.git' ])
     await fsMoveFiles(path.join(originPath, config.build.target), targetPath, [ '.git' ])
+
+
+
+    /**
+     * PUBLISH
+     */
 
     log('=======================\n\n')
     log('## Publishing...\n')
@@ -115,10 +149,24 @@ export const build = async (config, log = () => {}) => {
         target: targetPath,
     }, { log })
 
-    log('=======================\n\n')
-    log('## Cleaning up temp folders...\n')
-    if (config.config.cleanOrigin) await fs.remove(originPath)
-    if (config.config.cleanTarget) await fs.remove(targetPath)
+
+
+    /**
+     * CLEANUP
+     */
+
+    if (config.config.cleanOrigin) {
+        log('=======================\n\n')
+        log('## Cleaning origin repo...\n')
+        await fs.remove(originPath)
+    }
+
+    if (config.config.cleanTarget) {
+        log('=======================\n\n')
+        log('## Cleaning target repo...\n')
+        await fs.remove(targetPath)
+    }
+    
 
     const elapsed = new Date() - start
     const elapsedStr = ms(elapsed)

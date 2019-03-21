@@ -84,5 +84,6 @@ ADD index.js /usr/src/app
 # Default environment configuration:
 ENV NODE_ENV development
 ENV LOG_LEVEL error
+ENV DATA_PATH /var/lib/gatsby-deploy
 
 ENTRYPOINT [ "node", "index.js" ]
