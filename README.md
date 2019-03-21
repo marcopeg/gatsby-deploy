@@ -13,19 +13,29 @@ Even if this is quite safe, it is always better to generate a
 
     {
         "auth":{
-            "email": "xxx",
-            "username": "xxx",
+            "email": "marco.pegoraro@gmail.com",
+            "username": "marcopeg",
             "password": "xxx"
         },
+        "trigger": {
+            "type": "github-hook",
+            "event": "push",
+            "branch": "source"
+        },
         "origin": {
+            "type": "github",
             "repository": "marcopeg/hello-world",
             "branch": "source",
-            "build": "public",
-            "event": "release"
+            "build": "public"
         },
         "target": {
+            "type": "github",
             "repository": "marcopeg/hello-world",
             "branch": "master"
+        },
+        "build": {
+            "script": "build",
+            "target": "public"
         }
     }
 

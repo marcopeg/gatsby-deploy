@@ -20,16 +20,18 @@ export const build = async (config, log = () => {}) => {
     // await new Promise(resolve => setTimeout(resolve, 5000))
     // log('build finish')
     // return { elapsed: 5000, elapsedStr: '5s' }
+    // console.log(config)
     // throw new Error('nooo')
 
-    const originPath = `/tmp/gatsby-deploy/origin/${config.origin.repository}/${config.origin.branch}`
-    const targetPath = `/tmp/gatsby-deploy/target/${config.target.repository}/${config.target.branch}`
+    const originPath = `${config.config.data}/origin/${config.origin.repository}/${config.origin.branch}`
+    const targetPath = `${config.config.data}/target/${config.target.repository}/${config.target.branch}`
+    
 
     log('=======================\n\n')
     log('Cleaning up temp folders...\n')
 
-    if (config.cleanOrigin) await fs.remove(originPath)
-    if (config.cleanTarget) await fs.remove(targetPath)
+    if (config.config.cleanOrigin) await fs.remove(originPath)
+    if (config.config.cleanTarget) await fs.remove(targetPath)
 
     const originExists = await fs.exists(originPath)
     if (!originExists) {
@@ -97,7 +99,7 @@ export const build = async (config, log = () => {}) => {
     log('=======================\n\n')
     log('## Moving artifacts...\n')
     await fsEmptyDir(targetPath, [ '.git' ])
-    await fsMoveFiles(path.join(originPath, config.origin.build), targetPath, [ '.git' ])
+    await fsMoveFiles(path.join(originPath, config.build.target), targetPath, [ '.git' ])
 
     log('=======================\n\n')
     log('## Publishing...\n')
@@ -115,8 +117,8 @@ export const build = async (config, log = () => {}) => {
 
     log('=======================\n\n')
     log('## Cleaning up temp folders...\n')
-    if (config.cleanOrigin) await fs.remove(originPath)
-    if (config.cleanTarget) await fs.remove(targetPath)
+    if (config.config.cleanOrigin) await fs.remove(originPath)
+    if (config.config.cleanTarget) await fs.remove(targetPath)
 
     const elapsed = new Date() - start
     const elapsedStr = ms(elapsed)

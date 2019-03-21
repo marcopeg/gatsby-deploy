@@ -47,6 +47,7 @@ registerAction({
     handler: async ({ settings }) => {
 
         settings.deploy = {
+            data: config.get('DATA_PATH', path.join(process.cwd(), 'data')),
             cleanOrigin: config.get('KEEP_ORIGIN', '---') === '---'
                 ? true
                 : config.get('KEEP_ORIGIN') !== 'true',
